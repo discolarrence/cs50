@@ -8,9 +8,9 @@ void grayscale(int height, int width, RGBTRIPLE image[height][width])
     {
         for (int j = 0; j < width; j++)
         {
-            int red = image[i][j].rgbtRed;
-            int green = image[i][j].rgbtGreen;
-            int blue = image[i][j].rgbtBlue;
+            float red = image[i][j].rgbtRed;
+            float green = image[i][j].rgbtGreen;
+            float blue = image[i][j].rgbtBlue;
 
             int average = round((red + blue + green) / 3);
             image[i][j].rgbtRed = image[i][j].rgbtGreen = image[i][j].rgbtBlue = average;
@@ -37,7 +37,8 @@ void sepia(int height, int width, RGBTRIPLE image[height][width])
             if (sepiaRed > 255)
             {
                 image[i][j].rgbtRed = 255;
-            } else
+            } 
+            else
             {
                 image[i][j].rgbtRed = sepiaRed;
             }
@@ -45,7 +46,8 @@ void sepia(int height, int width, RGBTRIPLE image[height][width])
             if (sepiaGreen > 255)
             {
                 image[i][j].rgbtGreen = 255;
-            } else
+            } 
+            else
             {
                 image[i][j].rgbtGreen = sepiaGreen;
             }
@@ -53,7 +55,8 @@ void sepia(int height, int width, RGBTRIPLE image[height][width])
             if (sepiaBlue > 255)
             {
                 image[i][j].rgbtBlue = 255;
-            } else
+            } 
+            else
             {
                 image[i][j].rgbtBlue = sepiaBlue;
             }
@@ -71,9 +74,9 @@ void reflect(int height, int width, RGBTRIPLE image[height][width])
     {
         for (int j = 0; j < width; j++)
         {
-            temp[width-1-j].rgbtRed = image[i][j].rgbtRed;
-            temp[width-1-j].rgbtGreen = image[i][j].rgbtGreen;
-            temp[width-1-j].rgbtBlue = image[i][j].rgbtBlue;
+            temp[width - 1 - j].rgbtRed = image[i][j].rgbtRed;
+            temp[width - 1 - j].rgbtGreen = image[i][j].rgbtGreen;
+            temp[width - 1 - j].rgbtBlue = image[i][j].rgbtBlue;
         }
         for (int j = 0; j < width; j++)
         {
@@ -88,93 +91,47 @@ void reflect(int height, int width, RGBTRIPLE image[height][width])
 // Blur image
 void blur(int height, int width, RGBTRIPLE image[height][width])
 {
-    int redTotal;
-    int greenTotal;
-    int blueTotal;
-    int counter;
+    RGBTRIPLE temp[height][width];
     for (int i = 0; i < height; i++)
     {
-        redTotal = greenTotal = blueTotal = counter = 0;
         for (int j = 0; j < width; j++)
         {
-            //ONE
-            if (i - 1 >= 0 && j - 1 >= 0)
+            temp[i][j] = image[i][j];
+        }
+    }
+    
+    float redTotal;
+    float greenTotal;
+    float blueTotal;
+    int counter;
+    
+    for (int i = 0; i < height; i++)
+    {
+        for (int j = 0; j < width; j++)
+        {
+            redTotal = greenTotal = blueTotal = counter = 0;
+            for (int a = -1; a < 2; a++)
             {
-                redTotal += image[i-1][j-1].rgbtRed;
-                greenTotal += image[i-1][j-1].rgbtGreen;
-                blueTotal += image[i-1][j-1].rgbtBlue;
-                counter += 1;
+                for (int b = -1; b < 2; b++)
+                {
+                    if (i + a < 0 || i + a >= height || j + b < 0 || j + b >= width)
+                    {
+                        continue;
+                    }
+                    redTotal += temp[i + a][j + b].rgbtRed;
+                    greenTotal += temp[i + a][j + b].rgbtGreen;
+                    blueTotal += temp[i + a][j + b].rgbtBlue;
+                    counter += 1;
+                }
             }
-            //TWO
-            if (i - 1 >= 0)
-            {
-                redTotal += image[i-1][j].rgbtRed;
-                greenTotal += image[i-1][j].rgbtGreen;
-                blueTotal += image[i-1][j].rgbtBlue;
-                counter += 1;
-            }
-            //THREE
-            if (i - 1 >= 0 && j + 1 < width)
-            {
-                redTotal += image[i-1][j+1].rgbtRed;
-                greenTotal += image[i-1][j+1].rgbtGreen;
-                blueTotal += image[i-1][j+1].rgbtBlue;
-                counter += 1;
-            }
-            //FOUR
-            if (j - 1 >= 0)
-            {
-                redTotal += image[i][j-1].rgbtRed;
-                greenTotal += image[i][j-1].rgbtGreen;
-                blueTotal += image[i][j-1].rgbtBlue;
-                counter += 1;
-            }
-            //FIVE
-            redTotal += image[i][j].rgbtRed;
-            greenTotal += image[i][j].rgbtGreen;
-            blueTotal += image[i][j].rgbtBlue;
-            counter += 1;
-            //SIX
-            if (j + 1 < width)
-            {
-                redTotal += image[i][j+1].rgbtRed;
-                greenTotal += image[i][j+1].rgbtGreen;
-                blueTotal += image[i][j+1].rgbtBlue;
-                counter += 1;
-            }
-            //SEVEN
-            if (i + 1 < height && j - 1 >= 0)
-            {
-                redTotal += image[i+1][j-1].rgbtRed;
-                greenTotal += image[i+1][j-1].rgbtGreen;
-                blueTotal += image[i+1][j-1].rgbtBlue;
-                counter += 1;
-            }
-            //EIGHT
-            if (i + 1 < height)
-            {
-                redTotal += image[i+1][j].rgbtRed;
-                greenTotal += image[i+1][j].rgbtGreen;
-                blueTotal += image[i+1][j].rgbtBlue;
-                counter += 1;
-            }
-            //NINE
-            if (i + 1 < height && j + 1 < width)
-            {
-                redTotal += image[i-1][j+1].rgbtRed;
-                greenTotal += image[i-1][j+1].rgbtGreen;
-                blueTotal += image[i-1][j+1].rgbtBlue;
-                counter += 1;
-            }
-            
-            int newRed = round(redTotal/counter);
-            int newGreen = round(greenTotal/counter);
-            int newBlue = round(blueTotal/counter);
+            int newRed = round(redTotal / counter);
+            int newGreen = round(greenTotal / counter);
+            int newBlue = round(blueTotal / counter);
             
             image[i][j].rgbtRed = newRed;
             image[i][j].rgbtGreen = newGreen;
             image[i][j].rgbtBlue = newBlue;
-        };
+        }
     }
     return;
 }
