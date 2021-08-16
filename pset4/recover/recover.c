@@ -22,13 +22,21 @@ int main(int argc, char *argv[])
     }
     
     BYTE bytes[512];
-    fread(bytes, sizeof(BYTE), 512, file);
+    char name[8];
+    int jpg_count = 1;
     
-    if (bytes[0] == 0xff && bytes[1] == 0xd8 && bytes[2] == 0xff && (bytes[3] & 0xf0) == 0xe0)
+    while(fread(bytes, sizeof(BYTE), 512, file) != 0)
     {
-        printf("Maybe\n");
+        if (bytes[0] == 0xff && bytes[1] == 0xd8 && bytes[2] == 0xff && (bytes[3] & 0xf0) == 0xe0)
+        {
+            sprintf(name, "%03i.jpg", jpg_count);
+            img = fopen(name, "w");
+            fwrite(&bytes, sizeof(BYTE), 512, img);
+            
+        }
     }
-
+    
+    
     // Close file
     fclose(file);
 }
