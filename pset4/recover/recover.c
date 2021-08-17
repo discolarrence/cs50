@@ -21,25 +21,49 @@ int main(int argc, char *argv[])
         return 1;
     }
     
+    //make buffer
     BYTE bytes[512];
-    char name[8];
-    int jpg_count = 1;
     
-    while(fread(bytes, sizeof(BYTE), 512, file) != 0)
+    //make place for image
+    FILE *img = NULL;
+    
+    //counter to make filenames
+    int jpg_count = 0;
+    
+    //set found first file to false
+    int found_jpg = 0;
+    
+    //read through file, 512 bytes at a time, until no more
+    while (fread(bytes, 512, 1, file) != 0)
     {
         if (bytes[0] == 0xff && bytes[1] == 0xd8 && bytes[2] == 0xff && (bytes[3] & 0xf0) == 0xe0)
         {
+            //close last picture if not first picture
+            if (found_jpg == 1)
+            {
+                fclose(img);
+            }
+            //set found first jpg to true
+            else
+            {
+                found_jpg = 1;
+            }
+            //make filename for jpg, open with that name, and update jpg file count
+            char name[8];
             sprintf(name, "%03i.jpg", jpg_count);
             img = fopen(name, "w");
-            fwrite(&bytes, sizeof(BYTE), 512, img);
-            
+            jpg_count++;
         }
+        
+        //write to img file if not before the first file is found
+        if (found_jpg == 1)
+        {
+            fwrite(&bytes, 512, 1, img); 
+        }
+        
     }
-    
     
     // Close file
     fclose(file);
+    fclose(img);
 }
-
-// The files you generate should each be named ###.jpg, where ### is a three-digit decimal number, starting with 000 for the first image and counting up.
-// Your program, if it uses malloc, must not leak any memory.
