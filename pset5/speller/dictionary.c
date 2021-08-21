@@ -45,15 +45,19 @@ bool check(const char *word)
 }
 
 // Hashes word to a number
-//from https://cs50.stackexchange.com/questions/37209/pset5-speller-hash-function
+// from https://www.reddit.com/r/cs50/comments/eo4zro/good_hash_function_for_speller/
 unsigned int hash(const char *word)
 {
-    unsigned int hash_value = 0;
-    for (int i = 0, n = strlen(word); i < n; i++)
-    {
-         hash_value = (hash_value << 2) ^ word[i];
-    }
-    return hash_value % N; //N is size of hashtable
+    unsigned long hash = 5381;
+    int c = *word;
+    c = tolower(c);
+    while (*word != 0)
+        {
+            hash = ((hash << 5) + hash) + c;
+            c = *word++;
+            c = tolower(c);
+        }
+    return hash % N;
 }
 
 // Loads dictionary into memory, returning true if successful, else false
@@ -67,9 +71,9 @@ bool load(const char *dictionary)
         return false;
     }
     //READ STRINGS FROM FILE ONE AT A TIME
-    char new_word[LENGTH +1];
+    char new_word[LENGTH + 1];
     while (fscanf(file, "%s", new_word) != EOF)
-    //CREATE A NEW NODE FOR EACH WORD
+        //CREATE A NEW NODE FOR EACH WORD
     {
         node *n = malloc(sizeof(node));
         //****equality vs non-equality
@@ -78,9 +82,10 @@ bool load(const char *dictionary)
             return false;
         }
         strcpy(n->word, new_word);
-        n->next = NULL;
-    //INSERT NODE INTO HASH TABLE AT THAT LOCATION
+        
+        //INSERT NODE INTO HASH TABLE AT THAT LOCATION
         int hash_value = hash(new_word);
+        n->next = table[hash_value];
         table[hash_value] = n;
         entries++;
     }
@@ -100,13 +105,12 @@ bool unload(void)
 {
     // TODO
     //
-    for (int i = 0; i< N; i++)
+    for (int i = 0; i < N; i++)
     {
         node *cursor = table[i];
         while (cursor != NULL)
         {
             node *tmp = cursor;
-            free(cursor);
             cursor = tmp->next;
             free(tmp);
         }
