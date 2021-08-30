@@ -9,11 +9,18 @@
         <script>
 
             // TODO: Add code to check answers to questions
-            document.addEventListener('DOMContentLoaded', function() {
-                document.querySelector('button').addEventListener('click', function() {
-               
-                });
-            });
+            const button = document.querySelectorAll('button');
+
+            function mutilpleChoice(event) {
+                if (event.id == 'correct'){
+                    this.style.backgroundColor = "green";
+                }
+                else{
+                    return;
+                }
+            }
+            
+            button.addEventListener('click', multipleChoice);
         </script>
 
     </head>
@@ -29,16 +36,20 @@
                 <h2>Part 1: Multiple Choice </h2>
                 <hr>
                 <h3>Who has the best chicken?</h3>
-                <button class = "incorrect">Indi's</button>
-                <button class = "correct">Chicken King</button>
-                <button class = "incorrect">KFC</button>
+                <button>Indi's</button>
+                <button id = "correct">Chicken King</button>
+                <button>KFC</button>
             </div>
 
             <div class="section">
                 <h2>Part 2: Free Response</h2>
                 <hr>
-
-                <!-- TODO: Add free response question here -->
+                <h3>How do you spell my last name?</h3>
+                <form onsubmit="return false;">
+                    <input id="free-response" type="text">
+                    <input type="submit">
+                </form>
+                <!-- \ -->
 
             </div>
 
