@@ -1,8 +1,18 @@
+import os
 from flask import Flask, redirect, render_template, request, redirect
+from flask_mail import Mail, Message
 
 app = Flask(__name__)
 
-REGISTRANTS = {}
+app.config["MAIL_DEFAULT_SENDER"] = os.getenv("MAIL_DEFAULT_SENDER")
+app.config["MAIL_PASSWORD"] = os.getenv("MAIL_PASSWORD")
+app.config["MAIL_PORT"] = 587
+app.config["MAIL_SERVER"] = "smtp.gmail.com"
+app.config["MAIL_USE_TLS"] = True
+app.config["MAIL_USERNAME"] = os.getenv("MAIL_USERNAME")
+mail = Mail(app)
+
+db = SQL("sqlite:///froshims.db")
 
 SPORTS = [
     "Dodgeball",
@@ -19,19 +29,18 @@ def index():
 
 @app.route("/register", methods=["POST"])
 def register():
-    name = request.form.get("name")
-    if not name:
-        return render_template("error.html", message="Missing name")
+    name = request.form.get("email")
+    if not email:
+        return render_template("error.html", message="Missing email")
     sport = request.form.get("sport")
     if not sport:
         return render_template("error.html", message="Missing sport")
     if sport not in SPORTS:
         return render_template("error.html", message="Invalid sport")
     
-    REGISTRANTS[name] = sport
+    db.execute("INSERT INTO registrants (name, sport) VALUES(?, ?)", name, sport)
     
-    return redirect("/registrants")
+    message = Message("You are Registered!", recipients=[email])
+    mail.send(message)
 
-@app.route("/registrants")
-def registrants():
-    return render_template("registrants.html", registrants=REGISTRANTS)
+    return render_template("success.html")
