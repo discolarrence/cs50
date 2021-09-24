@@ -1,0 +1,23 @@
+body { 
+    font-family: 'Cormorant Infant', serif;
+    color: #36175a;
+    background-color: #fbfafd
+}
+
+header {
+    background-color: mediumvioletred;
+    border-bottom: 3px solid #36175a;
+}
+
+ul {
+    list-style: square;
+}
+
+a {
+    text-decoration: none;
+}
+
+.purple-links {
+    color: #7007e9;
+}
+
